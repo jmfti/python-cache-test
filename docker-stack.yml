@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: ./images/python/Dockerfile
+      # args:
+      #   requirements: http://source/requirements
+    image: python-app-base
+    ports: 
+      - "8000:8000"
+    #entrypoint: ./src/app/entrypoint.sh
+    entrypoint: /bin/sh entrypoint.sh
+    environment:
+      - ENV_APP_NAME=main_server
+      - ENV_IS_DEV=1
+      - ENV_DEV_PATH=/
+      - ENVIRONMENT=DEV
+      - WORKERS=1
+    networks:
+      back-tier:
+    volumes:
+      - "./src/:/app"
+      # - ./output/:/output/
+    deploy:
+      replicas:
+        2
+      resources:
+        limits:
+          cpus: '0.5'
+
+networks:
+  back-tier:
+    external: true
+    name: app_net
+
+volumes:
+  {}
+  # prometheus_data: {}
+  # grafana_data: {}
+  # mongodbdata: {}
